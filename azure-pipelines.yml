@@ -1,4 +1,5 @@
 # Python package
+
 # Create and test a Python package on multiple Python versions.
 # Add steps that analyze code, save the dist with the build record, publish to a PyPI-compatible index, and more:
 # https://docs.microsoft.com/azure/devops/pipelines/languages/python
@@ -25,12 +26,20 @@ steps:
     versionSpec: '$(python.version)'
   displayName: 'Use Python $(python.version)'
 
+- task: BrowserStackConfig@0
+  inputs:
+    BrowserStackServiceEndPoint: 'browserstack'
+- task: BrowserStackAppUploader@0
+  inputs:
+    appPath: 'ios/BStackSampleApp.ipa'
 - script: |
     python -m pip install --upgrade pip
     pip install -r requirements.txt
   displayName: 'Install dependencies'
 
 - script: |
-    pip install pytest pytest-azurepipelines
-    pytest
+    python ios/browserstack_sample.py
   displayName: 'pytest'
+- task: BrowserStackResults@1
+  inputs:
+    browserstackProduct: 'app automate'
